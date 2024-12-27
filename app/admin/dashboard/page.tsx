@@ -1,18 +1,68 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import Header from "../components/AdminHeader";
 import Sidebar from "../components/AdminSideBar"; 
 import { FaCalendarAlt, FaUsers, FaFileAlt, FaChartLine, FaTasks, FaHeartbeat } from "react-icons/fa";
 import Image from "next/image";
+import axios from "axios";
+
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center h-screen">
+    <div className="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full border-t-transparent border-primary" role="status">
+      <span className="sr-only">Loading...</span>
+    </div>
+  </div>
+);
 
 export default function Dashboard() {
   // Dummy data for dashboard statistics
+
   const appointmentCount = 25;
   const patientCount = 120;
   const prescriptionCount = 40;
   const pendingTasks = 5;
+  const router = useRouter();
+  const [auth, setAuth] = useState(false);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL + "/api/dashboard";
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (!token) {
+      router.push("/admin");
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const { message, data } = response.data;
+
+        if (message === "Welcome to the dashboard") {
+          setAuth(true);
+          console.log("Authenticated");
+        } else {
+          router.push("/admin");
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        router.push("/admin");
+      }
+    };
+
+    fetchData();
+  }, [router, apiUrl]);
   
   return (
+    <>
+    {auth ? (
     <div className="flex flex-col h-screen bg-[#f8f9fd]">
       {/* Full Width Header */}
       <Header />
@@ -173,5 +223,10 @@ export default function Dashboard() {
 
       </div>
     </div>
+  ):(
+     <LoadingSpinner />
+    )}
+    
+   </>
   );
 }

@@ -20,13 +20,13 @@ export default function Home() {
 
           <AdminLogin/>
 
-          <div className="mt-10 text-center">
+          {/* <div className="mt-10 text-center">
             <Link href="/admin/dashboard">
               <button className="px-4 py-2 bg-red-500 text-white rounded-md transition">
                 Go to Dashboard
               </button>
             </Link>
-          </div>
+          </div> */}
 
           <div className="text-14-regular mt-20 flex justify-between">
             <p className="justify-items-end text-slate-600 xl:text-left">

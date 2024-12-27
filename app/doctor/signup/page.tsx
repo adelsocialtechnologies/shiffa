@@ -33,19 +33,7 @@ export default function SignUp() {
           <DoctorSignUp />
 
           {/* Terms of Use */}
-          <div className="w-full mt-8 flex items-center">
-            <input type="checkbox" id="terms" className="mr-2" />
-            <label htmlFor="terms" className="text-sm text-gray-500">
-              I declare that I have read the 
-              <a href="/terms" className="text-[#24ae7c] font-semibold hover:underline"> Terms of Use </a> 
-              of the services and accept them.
-            </label>
-          </div>
-
-          {/* Sign Up Button */}
-          <button className="mt-8 w-full py-2 px-6 bg-[#24ae7c] text-white font-semibold rounded-md">
-            Create My Account
-          </button>
+          
 
           {/* Footer */}
           <div className="text-14-regular mt-20 flex justify-between">

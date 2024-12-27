@@ -20,13 +20,13 @@ export default function Home() {
 
           <DoctorLogin/>
 
-          <div className="mt-10 text-center">
+          {/* <div className="mt-10 text-center">
             <Link href="/doctor/dashboard">
               <button className="px-4 py-2 bg-[#24ae7c] text-white rounded-md transition">
                 Go to Dashboard
               </button>
             </Link>
-          </div>
+          </div> */}
 
           {/* Signup Redirect */}
           <div className="mt-4 text-center">

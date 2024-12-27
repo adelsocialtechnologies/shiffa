@@ -3,15 +3,20 @@
 import React from "react";
 import { FaSearch, FaBell } from "react-icons/fa";
 import Image from "next/image";
-
+import { useDoctorContext } from '../../../context/DoctorContext';
 const Header = () => {
-  
+  const { state } = useDoctorContext();
+  const { doctors, loading, error } = state;
   const userName = "Dr. Rajesh Kumar";
   const prof = "Cardiologist";
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  console.log(doctors);
+ 
 
   return (
     <div className="flex justify-between items-center p-4 bg-white shadow-md border-b-2 border-gray-200">
-      
       <div className="flex items-center space-x-3">
         <Image
           src="/assets/images/logo.jpg"

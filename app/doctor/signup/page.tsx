@@ -3,6 +3,9 @@ import Link from 'next/link';
 import DoctorSignUp from '@/app/components/doctorSignUp';
 
 export default function SignUp() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  console.log(apiUrl);
+
   return (
     <div className="flex md:h-full bg-[#131619] py-12">
       <section className="relative flex-1 overflow-y-auto px-[5%] my-auto flex flex-wrap justify-between">

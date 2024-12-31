@@ -1,18 +1,14 @@
 "use client";
 
 import  { createContext, useContext, useEffect, useReducer } from 'react';
-
-// 1. Create the Context
 const DoctorContext = createContext();
-
-// 2. Initial State
 const initialState = {
-  doctors: [], // Stores all doctors
-  loading: true, // Indicates if data is being fetched
-  error: null, // Error message, if any
+  doctors: [], 
+  loading: true, 
+  error: null, 
 };
 
-// 3. Reducer to Handle Actions
+
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FETCH_SUCCESS':
@@ -24,12 +20,12 @@ const reducer = (state, action) => {
   }
 };
 
-// 4. Context Provider Component
+
 export const DoctorProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  // Fetch All Doctors from the API
+
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
@@ -54,5 +50,5 @@ export const DoctorProvider = ({ children }) => {
   );
 };
 
-// 5. Custom Hook to Use Context
+
 export const useDoctorContext = () => useContext(DoctorContext);

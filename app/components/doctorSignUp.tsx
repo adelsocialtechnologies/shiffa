@@ -1,6 +1,6 @@
 "use client";
 
-// import { useRouter } from 'next/router';
+
 import axios from "axios";
 import {
   FaEnvelope,
@@ -13,6 +13,7 @@ import {
   FaMapPin,
   FaCogs,
   FaImage,
+  FaPhone
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 
@@ -26,6 +27,7 @@ const DoctorSignUp = () => {
     fullName: "",
     email: "",
     password: "",
+    phone:"",
     appointmentTimings: "",
     consultationFees: "",
     hospitalName: "",
@@ -97,10 +99,11 @@ const DoctorSignUp = () => {
         profilePhoto:payload.profilePicture,
         name: payload.fullName,
         email: payload.email,
-        phone: payload.profilePicture,
+        phone: payload.phone,
         password: payload.password,
         appointmentTime: payload.appointmentTimings,
-      consultantFees:payload.consultationFees,
+        consultantFees:payload.consultationFees,
+        verification:"pending",
         hospital: {
           name: payload.hospitalName,
           location: payload.hospitalLocation,
@@ -109,12 +112,6 @@ const DoctorSignUp = () => {
         },
         categories: payload.specializations, 
       }
-
-    
-
-    // console.log(req_body);
-
-
     try {
       const response = await axios.post(`${apiUrl}/api/doctorsignup`, req_body);
       console.log(response);
@@ -139,7 +136,8 @@ const DoctorSignUp = () => {
         hospitalName: "",
         hospitalLocation: "",
         profilePicture: "",
-        hospitalImages: ""
+        hospitalImages: "",
+        phone:""
     });
     setSelectedSpecializations([]);
   };
@@ -199,6 +197,24 @@ const DoctorSignUp = () => {
                 onChange={handleInputChange}
               />
               <FaEnvelope className="absolute left-3 top-3 text-gray-500" />
+            </div>
+          </div>
+
+          {/* Phone */}
+          <div className="w-full mt-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-400">
+              Contact no.
+            </label>
+            <div className="relative mt-1">
+              <input
+                id="phone"
+                type="number"
+                placeholder="+123456789"
+                className="w-full px-10 py-2 border text-white bg-[#1a1d21] border-gray-300 text-md rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
+                value={formData.phone}
+                onChange={handleInputChange}
+              />
+              <FaPhone className="absolute left-3 top-3 text-gray-500" />
             </div>
           </div>
 

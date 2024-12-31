@@ -3,29 +3,26 @@ import Cookies from "js-cookie";
 import React from "react";
 import { FaSearch, FaBell } from "react-icons/fa";
 import Image from "next/image";
-import jwtDecode from "jwt-decode"; 
+import {jwtDecode} from "jwt-decode"; 
 import { useDoctorContext } from "../../../context/DoctorContext";
-
+ 
 const Header = () => {
   const { state } = useDoctorContext();
   const { doctors, loading, error } = state;
-
-  // Get the token from cookies
+  
   const token = Cookies.get("token");
 
-  // Decode the token and extract the doctorUserId
   let doctorUserId = null;
   if (token) {
     try {
-      const decodedToken = jwtDecode(token); // Decode the token
-      doctorUserId = decodedToken.doctorUserId; // Extract doctorUserId
-      console.log(doctorUserId)
+      const decodedToken = jwtDecode(token); 
+      doctorUserId = decodedToken.doctorUserId; 
     } catch (err) {
       console.error("Error decoding token:", err);
     }
   }
 
-  // Find doctor data by doctorUserId
+
   const doctor = doctors.find((doct) => doct._id === doctorUserId);
   console.log(doctor);
   if (loading) return <p>Loading...</p>;
@@ -36,9 +33,9 @@ const Header = () => {
     return <p>Doctor not found. Please check your token or doctor data.</p>;
   }
 
-  // Extract the user's name and profession from the doctor object
+
   const userName = doctor.name || "Unknown Doctor";
-  const prof = doctor.profession || "Unknown Profession";
+  const location = doctor.hospital.location || "Unknown location";
 
   return (
     <div className="flex justify-between items-center p-4 bg-white shadow-md border-b-2 border-gray-200">
@@ -80,10 +77,10 @@ const Header = () => {
           />
         </div>
 
-        <div className="flex flex-col text-gray-800">
+        <a href={`/doctor/profile`}><div className="flex flex-col text-gray-800">
           <div className="font-semibold">{userName}</div>
-          <div className="text-xs text-gray-400">{prof}</div>
-        </div>
+          <div className="text-xs text-gray-400">{location}</div>
+        </div></a>
       </div>
     </div>
   );

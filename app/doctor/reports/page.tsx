@@ -4,6 +4,7 @@ import Sidebar from "../components/DoctorSidebar";
 import Header from "../components/DoctorHeader";
 import { FaFileAlt, FaDownload } from "react-icons/fa";
 import { useState } from "react";
+import DashboardOverview from "../components/DoctorDashboardOverview";
 
 export default function ReportsPage() {
   const [activeTab, setActiveTab] = useState("Reports");
@@ -29,26 +30,7 @@ export default function ReportsPage() {
           {/* Reports Overview */}
           <h1 className="text-3xl font-bold text-gray-800 mb-6">Reports Overview</h1>
 
-          {/* Report Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {/* Completed Reports */}
-            <div className="bg-gradient-to-r from-green-500 to-green-700 p-6 rounded-lg shadow-xl hover:scale-105 transition-all duration-300">
-              <h3 className="text-xl font-semibold text-white mb-4">Completed Reports</h3>
-              <p className="text-4xl font-bold text-white">{reports.filter(r => r.status === "Completed").length}</p>
-            </div>
-
-            {/* Pending Reports */}
-            <div className="bg-gradient-to-r from-yellow-500 to-yellow-700 p-6 rounded-lg shadow-xl hover:scale-105 transition-all duration-300">
-              <h3 className="text-xl font-semibold text-white mb-4">Pending Reports</h3>
-              <p className="text-4xl font-bold text-white">{reports.filter(r => r.status === "Pending").length}</p>
-            </div>
-
-            {/* Total Reports */}
-            <div className="bg-gradient-to-r from-blue-500 to-blue-700 p-6 rounded-lg shadow-xl hover:scale-105 transition-all duration-300">
-              <h3 className="text-xl font-semibold text-white mb-4">Total Reports</h3>
-              <p className="text-4xl font-bold text-white">{reports.length}</p>
-            </div>
-          </div>
+         <DashboardOverview />
 
           {/* Report List Table */}
           <div className="bg-white p-6 rounded-lg shadow-lg mb-8">

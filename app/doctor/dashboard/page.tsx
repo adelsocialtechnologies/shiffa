@@ -2,16 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import Header from "../components/DoctorHeader";
 import Sidebar from "../components/DoctorSidebar";
-import { FaCalendarAlt, FaUsers, FaFileAlt } from "react-icons/fa";
-import Image from "next/image";
-import axios from "axios";
+import DashboardOverview from "../components/DoctorDashboardOverview";
+import { useAppointmentContext } from "../../../context/AppointmentContext";
+import { usePatientContext } from "../../../context/UserContext";
 
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center h-screen">
-    <div className="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full border-t-transparent border-primary" role="status">
+    <div
+      className="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full border-t-transparent border-primary"
+      role="status"
+    >
       <span className="sr-only">Loading...</span>
     </div>
   </div>
@@ -20,10 +24,11 @@ const LoadingSpinner = () => (
 const Dashboard = () => {
   const router = useRouter();
   const [auth, setAuth] = useState(false);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL + "/api/dashboard";
-  const [appointmentCount, setAppointmentCount] = useState<number>(120);
-  const [patientCount, setPatientCount] = useState<number>(50);
-  const [prescriptionCount, setPrescriptionCount] = useState<number>(25);
+  const [appointments, setAppointments] = useState([]);
+  const [patients, setPatients] = useState({});
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const { getAppointmentsByDoctorId } = useAppointmentContext();
+  const { getPatientById } = usePatientContext();
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -34,28 +39,31 @@ const Dashboard = () => {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get(apiUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // Decode the token to get doctorId
+        const decoded = jwtDecode(token);
+        const doctorId = decoded.doctorUserId;
 
-        const { message, data } = response.data;
+        const fetchedAppointments = await getAppointmentsByDoctorId(doctorId);
+        setAppointments(fetchedAppointments);
 
-        if (message === "Welcome to the dashboard") {
-          setAuth(true);
-          console.log("Authenticated");
-        } else {
-          router.push("/");
+        const patientData = {};
+        for (const appointment of fetchedAppointments) {
+          if (!patientData[appointment.userId]) {
+            const patient = await getPatientById(appointment.userId);
+            patientData[appointment.userId] = patient.patient;
+          }
         }
+        setPatients(patientData);
+
+        setAuth(true);
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        console.error("Error fetching data:", error);
         router.push("/");
       }
     };
 
     fetchData();
-  }, [router, apiUrl]);
+  }, [router, getAppointmentsByDoctorId, getPatientById]);
 
   return (
     <>
@@ -64,70 +72,58 @@ const Dashboard = () => {
           <Header />
           <div className="flex flex-1">
             <Sidebar />
-            {/* Main Content Area */}
             <div className="flex-1 p-8 bg-gray-200 overflow-y-auto">
-              {/* Dashboard Overview */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
-                {/* Appointments */}
-                <div className="bg-gradient-to-r from-fuchsia-600 to-pink-600 p-6 rounded-lg shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
-                  <div className="flex items-center">
-                    <FaCalendarAlt className="text-white text-4xl mr-4" />
-                    <div>
-                      <h3 className="text-xl font-semibold text-white">Total Appointments</h3>
-                      <p className="text-3xl text-white">{appointmentCount}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Patients */}
-                <div className="bg-gradient-to-r from-blue-500 to-blue-700 p-6 rounded-lg shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
-                  <div className="flex items-center">
-                    <FaUsers className="text-white text-4xl mr-4" />
-                    <div>
-                      <h3 className="text-xl font-semibold text-white">Total Patients</h3>
-                      <p className="text-3xl text-white">{patientCount}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Prescriptions */}
-                <div className="bg-gradient-to-r from-green-500 to-green-700 p-6 rounded-lg shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
-                  <div className="flex items-center">
-                    <FaFileAlt className="text-white text-4xl mr-4" />
-                    <div>
-                      <h3 className="text-xl font-semibold text-white">Total Prescriptions</h3>
-                      <p className="text-3xl text-white">{prescriptionCount}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Recent Activities */}
-              <div className="mb-10">
-                <h3 className="text-2xl font-semibold text-black mb-4">Recent Activities</h3>
-                <div className="bg-white p-6 rounded-lg shadow-xl space-y-6">
-                  {/* Activity 1 */}
-                  <div className="flex items-center space-x-4">
-                    <Image src="/assets/images/patient1.jpg" alt="Patient A" width={50} height={50} className="rounded-full" />
-                    <p className="text-gray-700">
-                      <strong>New Appointment</strong> scheduled with <span className="text-black">Patient A</span>
-                    </p>
-                  </div>
-                  {/* Activity 2 */}
-                  <div className="flex items-center space-x-4">
-                    <Image src="/assets/images/patient2.jpg" alt="Patient B" width={50} height={50} className="rounded-full" />
-                    <p className="text-gray-700">
-                      <strong>Message</strong> received from <span className="text-black">Patient B</span>
-                    </p>
-                  </div>
-                  {/* Activity 3 */}
-                  <div className="flex items-center space-x-4">
-                    <Image src="/assets/images/patient3.jpg" alt="Patient C" width={50} height={50} className="rounded-full" />
-                    <p className="text-gray-700">
-                      <strong>Prescription</strong> updated for <span className="text-black">Patient C</span>
-                    </p>
-                  </div>
-                </div>
+              <DashboardOverview />
+              <div className="bg-white p-6 rounded-lg shadow-lg">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  Newly Appointments
+                </h2>
+                <table className="table-auto w-full border-collapse border border-gray-200">
+                  <thead>
+                    <tr className="bg-gray-500 text-left">
+                      <th className="px-4 py-2 border border-gray-300">Date</th>
+                      <th className="px-4 py-2 border border-gray-300">Time</th>
+                      <th className="px-4 py-2 border border-gray-300">
+                        Patient
+                      </th>
+                      <th className="px-4 py-2 border border-gray-300">Phone</th>
+                      <th className="px-4 py-2 border border-gray-300">Problem</th>
+                      <th className="px-4 py-2 border border-gray-300">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {appointments.reverse().map((appointment) => (
+                      <tr key={appointment._id} className="hover:bg-gray-50">
+                        <td className="px-4 py-2 border border-gray-300">
+                          {new Date(appointment.appointmentDate).toLocaleDateString("en-GB")}
+                        </td>
+                        <td className="px-4 py-2 border border-gray-300">
+                          {appointment.appointmentTime}
+                        </td>
+                        <td className="px-4 py-2 border border-gray-300">
+                          {patients[appointment.userId]?.name || "Loading..."}
+                        </td>
+                        <td className="px-4 py-2 border border-gray-300">
+                          {patients[appointment.userId]?.contact || "Loading..."}
+                        </td>
+                        <td className="px-4 py-2 border border-gray-300">
+                          {appointment.problem}
+                        </td>
+                        <td
+                          className={`px-4 py-2 border border-gray-300 font-semibold ${
+                            appointment.status === "confirmed"
+                              ? "text-green-500"
+                              : appointment.status === "pending"
+                              ? "text-red-500"
+                              : "text-yellow-500"
+                          }`}
+                        >
+                          {appointment.status}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

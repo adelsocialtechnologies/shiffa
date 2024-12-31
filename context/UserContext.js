@@ -47,15 +47,15 @@ export const PatientProvider = ({ children }) => {
   // Fetch a single patient by ID
   const getPatientById = async (id) => {
     try {
-      const response = await fetch(`${apiUrl}/api/getpateintuser/${id}`);
+      const response = await fetch(`${apiUrl}/api/getpatientUser/${id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch patient by ID");
       }
       const patient = await response.json();
-      return patient; // Return the fetched patient data
+      return patient; 
     } catch (error) {
       console.error(error.message);
-      return null; // Return null if an error occurs
+      return null; 
     }
   };
 
